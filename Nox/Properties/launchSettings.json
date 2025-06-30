@@ -10,7 +10,7 @@
         },
         "Nox - parse": {
             "commandName": "Project",
-            "commandLineArgs": "parse"
+            "commandLineArgs": "parse C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
         },
         "Nox - evaluate": {
             "commandName": "Project",

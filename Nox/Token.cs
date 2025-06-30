@@ -6,7 +6,7 @@ namespace Nox
     public class Token
     {
         private readonly TokenType type;
-        private readonly string lexeme;
+        public readonly string lexeme;
         private readonly object? literal;
         private readonly int line;
 
