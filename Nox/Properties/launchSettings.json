@@ -1,0 +1,20 @@
+{
+    "profiles": {
+        "Nox": {
+            "commandName": "Project",
+            "commandLineArgs": ""
+        },
+        "Nox - tokenize": {
+            "commandName": "Project",
+            "commandLineArgs": "tokenize C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
+        },
+        "Nox - parse": {
+            "commandName": "Project",
+            "commandLineArgs": "parse"
+        },
+        "Nox - evaluate": {
+            "commandName": "Project",
+            "commandLineArgs": "evaluate"
+        }
+    }
+}

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nox", "Nox\Nox.csproj", "{55478C62-529E-A50C-449E-DD7EEF8437FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nox.Tests", "Nox.Tests\Nox.Tests.csproj", "{075D6634-3DEC-E085-5699-B2F061AA1649}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{55478C62-529E-A50C-449E-DD7EEF8437FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55478C62-529E-A50C-449E-DD7EEF8437FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55478C62-529E-A50C-449E-DD7EEF8437FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55478C62-529E-A50C-449E-DD7EEF8437FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{075D6634-3DEC-E085-5699-B2F061AA1649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{075D6634-3DEC-E085-5699-B2F061AA1649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{075D6634-3DEC-E085-5699-B2F061AA1649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{075D6634-3DEC-E085-5699-B2F061AA1649}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2B7FC15D-3CCC-42CA-B68E-E2AD55F74994}
+	EndGlobalSection
+EndGlobal
