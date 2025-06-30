@@ -1,4 +1,6 @@
-﻿namespace Nox
+﻿using Nox.AST;
+
+namespace Nox
 {
     internal class Program
     {
@@ -27,6 +29,9 @@
                     break;
                 case "run":
                     break;
+                case "genast":
+                    HandleGenerateAST(outputDirectory: secondArgument);
+                    break;
                 default:
                     break;
             }
@@ -35,6 +40,11 @@
         private static void HandleTokenize(string filename)
         {
             Nox.RunFile(filename);
+        }
+
+        private static void HandleGenerateAST(string outputDirectory)
+        {
+            Generator.Generate(outputDirectory);
         }
     }
 }

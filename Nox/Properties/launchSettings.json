@@ -15,6 +15,10 @@
         "Nox - evaluate": {
             "commandName": "Project",
             "commandLineArgs": "evaluate"
+        },
+        "Nox - genast": {
+            "commandName": "Project",
+            "commandLineArgs": "genast C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\Generated\\"
         }
     }
 }
