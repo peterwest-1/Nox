@@ -13,7 +13,7 @@ namespace Nox.AST
             DefineAST(outputDir, "Expr", [
               "Binary   : Expr left, Token op, Expr right",
               "Grouping : Expr expression",
-              "Literal  : Object value",
+              "Literal  : object value",
               "Unary    : Token op, Expr right"
             ]);
         }
@@ -29,6 +29,8 @@ namespace Nox.AST
             writer.WriteLine($"public abstract class {baseName}");
             writer.WriteLine("{");
 
+            DefineVisitor(writer, baseName, types);
+
             foreach (string type in types)
             {
                 string className = type.Split(":")[0].Trim();
@@ -36,13 +38,18 @@ namespace Nox.AST
                 DefineType(writer, baseName, className, fields);
             }
 
+            writer.WriteLine();
+            writer.WriteLine("    public abstract T Accept<T>(IVisitor<T> visitor);");
+
+
             writer.WriteLine("}");
         }
 
         private static void DefineType(StreamWriter writer, string baseName, string className, string fieldList)
         {
-            writer.WriteLine("    class " + className + " : " + baseName);
+            writer.WriteLine("    public class " + className + " : " + baseName);
             writer.WriteLine("    {");
+
             // Constructor.
             writer.WriteLine("        public " + className + "(" + fieldList + ")");
             writer.WriteLine("        {");
@@ -57,11 +64,31 @@ namespace Nox.AST
 
             writer.WriteLine("        }");
 
+            writer.WriteLine("        public override T Accept<T>(IVisitor<T> visitor)");
+            writer.WriteLine("        {");
+            writer.WriteLine("            return visitor.Visit" + className + baseName + "(this);");
+            writer.WriteLine("        }");
+
             // Fields.
             writer.WriteLine();
             foreach (string field in fields)
             {
                 writer.WriteLine("        public " + field + ";");
+            }
+
+            writer.WriteLine("    }");
+        }
+
+        private static void DefineVisitor(StreamWriter writer, string baseName, List<string> types)
+        {
+            writer.WriteLine("    interface IVisitor<T>");
+            writer.WriteLine("    {");
+
+            foreach (string type in types)
+            {
+                string typeName = type.Split(":")[0].Trim();
+                writer.WriteLine("        T Visit" + typeName + baseName + "(" +
+                    typeName + " " + baseName.ToLower() + ");");
             }
 
             writer.WriteLine("    }");

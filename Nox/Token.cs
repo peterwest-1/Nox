@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Nox
 {
-    internal class Token
+    public class Token
     {
         private readonly TokenType type;
         private readonly string lexeme;
