@@ -1,36 +1,31 @@
 ﻿
 
-namespace Nox.Tests.TestTokenizer
+using Nox.AST;
+
+namespace Nox.Tests.TestParser
 {
     public class Errors
     {
         [Fact]
-        public void TestTokenizeLexicalErrors()
+        public void TestParsePrintSyntacticErrors()
         {
             //Arrange
             StringWriter stringWriter = new StringWriter();
             Console.SetOut(stringWriter);
 
 
-            string input = ",.$(#";
+            string input = "(72 +)";
             Tokenizer tokenizer = new(input);
+            List<Token> tokens = tokenizer.Tokenize();
 
             //Act 
-            List<Token> tokens = tokenizer.Tokenize();
+            Parser parser = new(tokens);
+            Expr expression = parser.Parse();
+            //string result = new Printer().Print(expression);
 
             //Assert
             string output = stringWriter.ToString();
-            Assert.Contains("[line 1] Error: Unexpected character: $", output);
-            Assert.Contains("[line 1] Error: Unexpected character: #", output);
-
-
-            Queue<Token> queue = new(tokens);
-            Assert.Equal(4, tokens.Count);
-
-            Assert.Equal("COMMA , null", queue.Dequeue().ToString());
-            Assert.Equal("DOT . null", queue.Dequeue().ToString());
-            Assert.Equal("LEFT_PAREN ( null", queue.Dequeue().ToString());
-            Assert.Equal("EOF  null", queue.Dequeue().ToString());
+            Assert.Contains("[line 1] Error at ')': Expect expression.", output);
         }
 
 

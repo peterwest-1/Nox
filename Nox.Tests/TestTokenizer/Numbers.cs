@@ -5,7 +5,7 @@ namespace Nox.Tests.TestTokenizer
     public class Numbers
     {
         [Fact]
-        public void TestNumbersAll()
+        public void TestTokenizeNumbersAll()
         {
             //Arrange
             string input = "123\r\n123.456\r\n.456\r\n123.";
@@ -29,7 +29,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestNumbersIntegers()
+        public void TestTokenizeNumbersIntegers()
         {
             //Arrange
             string input = "123";
@@ -48,7 +48,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestNumbersWithDot()
+        public void TestTokenizeNumbersWithDot()
         {
             //Arrange
             string input = "123.456";
@@ -68,7 +68,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestNumbersEndingOnDot()
+        public void TestTokenizeNumbersEndingOnDot()
         {
             //Arrange
             string input = "123.";
@@ -89,7 +89,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestNumbersLiteralsOne()
+        public void TestTokenizeNumbersLiteralsOne()
         {
             //Arrange
             string input = "42";
@@ -108,7 +108,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestNumbersLiteralsTwo()
+        public void TestTokenizeNumbersLiteralsTwo()
         {
             //Arrange
             string input = "1234.1234";

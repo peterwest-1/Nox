@@ -1,4 +1,6 @@
 ﻿
+using System.Globalization;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Nox.AST
@@ -24,7 +26,15 @@ namespace Nox.AST
         public string VisitLiteralExpr(Expr.Literal expr)
         {
             if (expr.value == null) return "nil";
-            return expr.value.ToString() ?? "nil";
+            if (expr.value is double doubleValue)
+            {
+                return doubleValue % 1 == 0 ? doubleValue.ToString("0.0###", CultureInfo.InvariantCulture) : doubleValue.ToString(CultureInfo.InvariantCulture);
+            }
+            if (expr.value is bool boolValue)
+            {
+                return boolValue.ToString().ToLowerInvariant();
+            }
+            return expr.value.ToString() ?? "LITERAL VALUE NULL";
         }
 
         public string VisitUnaryExpr(Expr.Unary expr)

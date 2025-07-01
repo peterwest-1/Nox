@@ -5,7 +5,7 @@ namespace Nox.Tests.TestTokenizer
     public class Punctuators
     {
         [Fact]
-        public void TestParens()
+        public void TestTokenizeParens()
         {
             //Arrange
             string input = "(()";
@@ -25,7 +25,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestBraces()
+        public void TestTokenizeBraces()
         {
             //Arrange
             string input = "{{}}";
@@ -46,7 +46,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestOthersingleCharTokens()
+        public void TestTokenizeOthersingleCharTokens()
         {
             //Arrange
             string input = "({*.,+*})";
@@ -72,7 +72,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestEquals()
+        public void TestTokenizeEquals()
         {
             //Arrange
             string input = "!===<=>=!=";
@@ -94,7 +94,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestOthers()
+        public void TestTokenizeOthers()
         {
             //Arrange
             string input = "<>/.";
@@ -115,7 +115,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestPunctuators()
+        public void TestTokenizePunctuators()
         {
             //Arrange
             string input = "(){};,+-*!===<=>=!=<>/.";
@@ -151,7 +151,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestAssignmentAndEqualityOperators()
+        public void TestTokenizeAssignmentAndEqualityOperators()
         {
             //Arrange
             string input = "={===}";
@@ -173,7 +173,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestNegationAndInequalityOperators()
+        public void TestTokenizeNegationAndInequalityOperators()
         {
             //Arrange
             string input = "!!===";
@@ -193,7 +193,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestRelationalOperators()
+        public void TestTokenizeRelationalOperators()
         {
             //Arrange
             string input = "<<=>>=";
@@ -214,7 +214,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestDivisionOperatorAndComments()
+        public void TestTokenizeDivisionOperatorAndComments()
         {
             //Arrange
             string input = "()// Comment";

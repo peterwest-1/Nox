@@ -8,9 +8,9 @@ namespace Nox.AST
     internal class Generator
     {
 
-        public static void Generate(string outputDir)
+        public static void Generate(string outputDirectory)
         {
-            DefineAST(outputDir, "Expr", [
+            DefineAST(outputDirectory, "Expr", [
               "Binary   : Expr left, Token op, Expr right",
               "Grouping : Expr expression",
               "Literal  : object value",

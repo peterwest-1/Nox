@@ -5,7 +5,7 @@ namespace Nox.Tests.TestTokenizer
     public class Strings
     {
         [Fact]
-        public void TestStringsAll()
+        public void TestTokenizeStringsAll()
         {
             //Arrange
             string input = "\"\"\r\n\"string\"\r\n";
@@ -25,7 +25,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestStringsEmpty()
+        public void TestTokenizeStringsEmpty()
         {
             //Arrange
             string input = "\"\"";
@@ -44,7 +44,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestStringsString()
+        public void TestTokenizeStringsString()
         {
             //Arrange
             string input = "\"string\"";
@@ -63,7 +63,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestStringsStringLiteral()
+        public void TestTokenizeStringsStringLiteral()
         {
             //Arrange
             string input = "\"foo baz\"";

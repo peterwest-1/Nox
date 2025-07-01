@@ -2,10 +2,10 @@
 
 namespace Nox.Tests.TestTokenizer
 {
-    public class Identifiers
+    public class Booleans
     {
         [Fact]
-        public void TestIdentifiers()
+        public void TestTokenizeIdentifiers()
         {
             //Arrange
             string input = "andy formless fo _ _123 _abc ab123\r\nabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_";
@@ -30,7 +30,7 @@ namespace Nox.Tests.TestTokenizer
         }
 
         [Fact]
-        public void TestIdentifiersOne()
+        public void TestTokenizeIdentifiersOne()
         {
             //Arrange
             string input = "foo bar _hello";

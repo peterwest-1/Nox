@@ -5,7 +5,7 @@ namespace Nox.Tests.TestTokenizer
     public class Keywords
     {
         [Fact]
-        public void TestKeywords()
+        public void TestTokenizeKeywords()
         {
             //Arrange
             string input = "and class else false for fun if nil or return super this true var while";

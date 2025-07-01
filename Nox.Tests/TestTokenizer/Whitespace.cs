@@ -5,7 +5,7 @@ namespace Nox.Tests.TestTokenizer
     public class Whitespace
     {
         [Fact]
-        public void TestWhitespaceAll()
+        public void TestTokenizeWhitespaceAll()
         {
             //Arrange
             string input = "space    tabs\t\t\t\tnewlines\r\n\r\n\r\n\r\n\r\nend";
