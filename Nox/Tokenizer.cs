@@ -116,13 +116,6 @@ namespace Nox
             }
         }
 
-        //private void ScanIdentifier()
-        //{
-        //    while (IsAlphaNumeric(Peek())) { Advance(); }
-        //    TokenType type = keywords.TryGetValue(source[start..current], out TokenType keywordType) ? keywordType : TokenType.IDENTIFIER;
-        //    AddToken(type);
-        //}
-
         private void ScanIdentifier()
         {
             while (IsAlphaNumeric(Peek())) { Advance(); }

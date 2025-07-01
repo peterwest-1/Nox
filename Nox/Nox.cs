@@ -86,6 +86,12 @@ namespace Nox
             List<Stmt> statements = parser.Parse();
             if (hadError) return;
 
+
+            Resolver resolver = new(interpreter);
+            resolver.Resolve(statements);
+            if (hadError) return;
+
+
             interpreter.Interpret(statements);
         }
         public static void Error(int line, string message)

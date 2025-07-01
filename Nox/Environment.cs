@@ -1,5 +1,7 @@
 ﻿
 
+using System;
+
 namespace Nox
 {
     //Environment is already in .NET, changing to "Habitat"
@@ -52,6 +54,27 @@ namespace Nox
 
             throw new NoxRuntimeException(name,
                 "Undefined variable '" + name.lexeme + "'.");
+        }
+
+        public object GetAt(int distance, string name)
+        {
+            return Ancestor(distance).values.GetValueOrDefault(name);
+        }
+
+        private Environment Ancestor(int distance)
+        {
+            Environment environment = this;
+            for (int i = 0; i < distance; i++)
+            {
+                environment = environment.enclosing;
+            }
+
+            return environment;
+        }
+
+        public void AssignAt(int distance, Token name, Object value)
+        {
+            Ancestor(distance).values.Add(name.lexeme, value);
         }
     }
 }

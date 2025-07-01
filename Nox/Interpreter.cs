@@ -9,6 +9,8 @@ namespace Nox
         public readonly Environment globals = new();
         private Environment environment;
 
+        private Dictionary<Expr, int> locals = [];
+
         public Interpreter()
         {
             environment = globals;
@@ -150,7 +152,7 @@ namespace Nox
                 return text;
             }
 
-            return ob.ToString();
+            return ob.ToString() ?? "STRINGIFY PROBLEM IN INTERPRETER";
         }
 
         public object VisitExpressionStmt(Stmt.Expression stmt)
@@ -168,7 +170,7 @@ namespace Nox
 
         object Expr.IVisitor<object>.VisitVariableExpr(Expr.Variable expr)
         {
-            return environment.Get(expr.name);
+            return LookUpVariable(expr.name, expr);
         }
 
         object Stmt.IVisitor<object>.VisitVarStmt(Stmt.Var stmt)
@@ -186,7 +188,16 @@ namespace Nox
         object Expr.IVisitor<object>.VisitAssignExpr(Expr.Assign expr)
         {
             object value = Evaluate(expr.value);
-            environment.Assign(expr.name, value);
+            int distance = locals.GetValueOrDefault(expr);
+            if (distance != null)
+            {
+                environment.AssignAt(distance, expr.name, value);
+            }
+            else
+            {
+                globals.Assign(expr.name, value);
+            }
+
             return value;
         }
 
@@ -290,10 +301,28 @@ namespace Nox
 
         public object VisitReturnStmt(Stmt.Return stmt)
         {
-            Object value = null;
+            object value = null;
             if (stmt.value != null) value = Evaluate(stmt.value);
 
             throw new NoxReturnException(value);
         }
+
+        public void Resolve(Expr expr, int depth)
+        {
+            locals.Add(expr, depth);
+        }
+
+        private object LookUpVariable(Token name, Expr expr)
+        {
+            if (locals.TryGetValue(expr, out int distance))
+            {
+                return environment.GetAt(distance, name.lexeme);
+            }
+            else
+            {
+                return globals.Get(name);
+            }
+        }
     }
 }
+
