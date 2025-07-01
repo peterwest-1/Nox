@@ -28,14 +28,15 @@ namespace Nox
                     Nox.ParseFile(filename: secondArgument);
                     break;
                 case "evaluate":
+                    Nox.EvaluateFile(filename: secondArgument);
                     break;
                 case "run":
-                    break;
+                    throw new NotImplementedException();
                 case "genast":
                     Generator.Generate(outputDirectory: secondArgument);
                     break;
                 default:
-                    break;
+                    throw new NotImplementedException();
             }
         }
 

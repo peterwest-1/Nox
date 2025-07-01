@@ -1,22 +1,28 @@
 ﻿
 using Nox.AST;
+using System.Linq.Expressions;
 
 namespace Nox
 {
     internal class Nox
     {
-        private static bool hadError = false;
 
+        private static Interpreter interpreter = new();
+
+        private static bool hadError = false;
         public static bool HadError { get => hadError; set => hadError = value; }
+
+        private static bool hadRuntimeError = false;
+        public static bool HadRuntimeError { get => hadRuntimeError; set => hadRuntimeError = value; }
 
         public static void RunFile(string path)
         {
             string contents = File.ReadAllText(Path.GetFullPath(path));
             Run(contents);
             if (hadError) { Environment.Exit(65); }
+            if (HadRuntimeError) { Environment.Exit(70); }
 
         }
-
         public static void TokenizeFile(string filename)
         {
             string contents = File.ReadAllText(Path.GetFullPath(filename));
@@ -36,13 +42,29 @@ namespace Nox
             string contents = File.ReadAllText(Path.GetFullPath(filename));
             Tokenizer tokenizer = new(contents);
             List<Token> tokens = tokenizer.Tokenize();
+            if (hadError) return;
 
             Parser parser = new(tokens);
             Expr expression = parser.Parse();
-
             if (hadError) return;
 
             Console.WriteLine(new Printer().Print(expression));
+        }
+
+        public static void EvaluateFile(string filename)
+        {
+            string contents = File.ReadAllText(Path.GetFullPath(filename));
+            Tokenizer tokenizer = new(contents);
+            List<Token> tokens = tokenizer.Tokenize();
+            if (hadError) return;
+
+            Parser parser = new(tokens);
+            Expr expression = parser.Parse();
+            if (hadError) return;
+
+            interpreter.Interpret(expression);
+            if (hadError) return;
+            if (hadRuntimeError) return; //?
         }
 
         private static void RunPrompt()
@@ -60,12 +82,13 @@ namespace Nox
         {
             Tokenizer tokenizer = new(source);
             List<Token> tokens = tokenizer.Tokenize();
+            if (hadError) return;
 
-            // For now, just print the tokens.
-            foreach (Token token in tokens)
-            {
-                Console.WriteLine(token);
-            }
+            Parser parser = new(tokens);
+            Expr expression = parser.Parse();
+            if (hadError) return;
+
+            interpreter.Interpret(expression);
         }
         public static void Error(int line, string message)
         {
@@ -88,6 +111,13 @@ namespace Nox
         {
             Console.WriteLine("[line " + line + "] Error" + where + ": " + message);
             hadError = true;
+        }
+
+        public static void RuntimeError(NoxRuntimeException exception)
+        {
+            Console.Error.WriteLine(exception.Message +
+                "\n[line " + exception.Token.line + "]");
+            hadRuntimeError = true;
         }
 
     }

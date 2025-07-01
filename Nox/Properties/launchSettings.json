@@ -14,7 +14,11 @@
         },
         "Nox - evaluate": {
             "commandName": "Project",
-            "commandLineArgs": "evaluate"
+            "commandLineArgs": "evaluate C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
+        },
+        "Nox - run": {
+            "commandName": "Project",
+            "commandLineArgs": "run C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
         },
         "Nox - genast": {
             "commandName": "Project",
