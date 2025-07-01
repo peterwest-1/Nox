@@ -1,6 +1,4 @@
-﻿
-using System;
-using static Expr;
+﻿using static Expr;
 using static Stmt;
 
 namespace Nox
@@ -43,14 +41,14 @@ namespace Nox
         private Stmt ReturnStatement()
         {
             Token keyword = Previous();
-            Expr value = null;
+            Expr? value = null;
             if (!Check(TokenType.SEMICOLON))
             {
                 value = Expression();
             }
 
             Consume(TokenType.SEMICOLON, "Expect ';' after return value.");
-            return new Return(keyword, value);
+            return new Return(keyword, value!);
         }
 
         private Stmt ForStatement()
@@ -150,6 +148,7 @@ namespace Nox
         {
             try
             {
+                if (Match(TokenType.CLASS)) return ClassDeclaration();
                 if (Match(TokenType.FUN)) return Function("function");
                 if (Match(TokenType.VAR)) return VarDeclaration();
 
@@ -161,6 +160,23 @@ namespace Nox
                 return null;
             }
         }
+
+        private Stmt ClassDeclaration()
+        {
+            Token name = Consume(TokenType.IDENTIFIER, "Expect class name.");
+            Consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
+
+            List<Stmt.Function> methods = [];
+            while (!Check(TokenType.RIGHT_BRACE) && !IsAtEnd())
+            {
+                methods.Add(Function("method"));
+            }
+
+            Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
+
+            return new Stmt.Class(name, methods);
+        }
+
 
         private Function Function(string kind)
         {
@@ -198,7 +214,7 @@ namespace Nox
             }
 
             Consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
-            return new Var(name, initializer);
+            return new Var(name, initializer!);
         }
 
         private Stmt ExpressionStatement()
@@ -233,6 +249,10 @@ namespace Nox
                 {
                     Token name = v.name;
                     return new Assign(name, value);
+                }
+                else if (expr is Get get)
+                {
+                    return new Set(get.obj, get.name, value);
                 }
 
                 Error(equals, "Invalid assignment target.");
@@ -347,6 +367,11 @@ namespace Nox
                 {
                     expr = FinishCall(expr);
                 }
+                else if (Match(TokenType.DOT))
+                {
+                    Token name = Consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
+                    expr = new Expr.Get(expr, name);
+                }
                 else
                 {
                     break;
@@ -383,17 +408,10 @@ namespace Nox
             if (Match(TokenType.TRUE)) return new Literal(true);
             if (Match(TokenType.NIL)) return new Literal(null);
 
+            if (Match(TokenType.NUMBER, TokenType.STRING)) return new Literal(Previous().literal);
 
-            if (Match(TokenType.NUMBER, TokenType.STRING))
-            {
-                return new Literal(Previous().literal);
-            }
-
-
-            if (Match(TokenType.IDENTIFIER))
-            {
-                return new Variable(Previous());
-            }
+            if (Match(TokenType.THIS)) return new Expr.This(Previous());
+            if (Match(TokenType.IDENTIFIER)) return new Variable(Previous());
 
             if (Match(TokenType.LEFT_PAREN))
             {

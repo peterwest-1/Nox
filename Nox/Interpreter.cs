@@ -1,6 +1,7 @@
 ﻿
 
 using Nox.Callables;
+using System;
 
 namespace Nox
 {
@@ -294,7 +295,7 @@ namespace Nox
 
         object Stmt.IVisitor<object>.VisitFunctionStmt(Stmt.Function stmt)
         {
-            NoxFunction function = new NoxFunction(stmt, environment);
+            NoxFunction function = new(stmt, environment, false);
             environment.Define(stmt.name.lexeme, function);
             return null;
         }
@@ -322,6 +323,53 @@ namespace Nox
             {
                 return globals.Get(name);
             }
+        }
+
+        public object VisitClassStmt(Stmt.Class stmt)
+        {
+            environment.Define(stmt.name.lexeme, null);
+            Dictionary<string, NoxFunction> methods = [];
+            foreach (Stmt.Function method in stmt.methods)
+            {
+                NoxFunction function = new(method, environment, method.name.lexeme.Equals("init"));
+                methods.Add(method.name.lexeme, function);
+            }
+
+            NoxClass mClass = new NoxClass(stmt.name.lexeme, methods);
+            environment.Assign(stmt.name, mClass);
+            return null;
+        }
+
+        public object VisitGetExpr(Expr.Get expr)
+        {
+            object obj = Evaluate(expr.obj);
+            if (obj is NoxInstance ob)
+            {
+                return ob.Get(expr.name);
+            }
+
+            throw new NoxRuntimeException(expr.name,
+                "Only instances have properties.");
+        }
+
+        public object VisitSetExpr(Expr.Set expr)
+        {
+            object obj = Evaluate(expr.obj);
+
+            if (obj is not NoxInstance)
+            {
+                throw new NoxRuntimeException(expr.name,
+                                       "Only instances have fields.");
+            }
+
+            object value = Evaluate(expr.value);
+            ((NoxInstance)obj).Set(expr.name, value);
+            return value;
+        }
+
+        public object VisitThisExpr(Expr.This expr)
+        {
+            return LookUpVariable(expr.keyword, expr);
         }
     }
 }

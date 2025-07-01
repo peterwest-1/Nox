@@ -7,12 +7,13 @@ namespace Nox
     {
         private Function declaration;
         private Environment closure;
+        private readonly bool IsInitializer;
 
-
-        public NoxFunction(Function declaration, Environment closure)
+        public NoxFunction(Function declaration, Environment closure, bool IsInitializer = false)
         {
             this.declaration = declaration;
             this.closure = closure;
+            this.IsInitializer = IsInitializer;
         }
 
         public int Arity() => declaration.paras.Count;
@@ -32,14 +33,24 @@ namespace Nox
             }
             catch (NoxReturnException returnValue)
             {
+                if (IsInitializer) return closure.GetAt(0, "this");
                 return returnValue.value;
             }
+
+            if (IsInitializer) return closure.GetAt(0, "this");
             return null;
         }
 
         override public string ToString()
         {
             return "<fn " + declaration.name.lexeme + ">";
+        }
+
+        public NoxFunction Bind(NoxInstance instance)
+        {
+            Environment environment = new(closure);
+            environment.Define("this", instance);
+            return new NoxFunction(declaration, environment, IsInitializer);
         }
     }
 }

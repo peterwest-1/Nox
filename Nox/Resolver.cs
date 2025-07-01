@@ -1,12 +1,29 @@
 ﻿
+using System;
+
 namespace Nox
 {
     internal class Resolver : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
+        enum FunctionType
+        {
+            NONE,
+            FUNCTION,
+            METHOD,
+            INITIALIZER,
+        }
+
+        enum ClassType
+        {
+            NONE,
+            CLASS
+        }
+
         private readonly Interpreter interpreter;
 
         private readonly Stack<Dictionary<string, bool>> scopes = [];
         private FunctionType currentFunction = FunctionType.NONE;
+        private ClassType currentClass = ClassType.NONE;
 
 
         public Resolver(Interpreter interpreter)
@@ -80,20 +97,20 @@ namespace Nox
 
         public object VisitLiteralExpr(Expr.Literal expr)
         {
-            return null;
+            return null!;
         }
 
         public object VisitLogicalExpr(Expr.Logical expr)
         {
             Resolve(expr.left);
             Resolve(expr.right);
-            return null;
+            return null!;
         }
 
         public object VisitPrintStmt(Stmt.Print stmt)
         {
             Resolve(stmt.expression);
-            return null;
+            return null!;
         }
 
         public object VisitReturnStmt(Stmt.Return stmt)
@@ -105,6 +122,11 @@ namespace Nox
 
             if (stmt.value != null)
             {
+                if (currentFunction == FunctionType.INITIALIZER)
+                {
+                    Nox.Error(stmt.keyword,
+                        "Can't return a value from an initializer.");
+                }
                 Resolve(stmt.value);
             }
 
@@ -114,7 +136,7 @@ namespace Nox
         public object VisitUnaryExpr(Expr.Unary expr)
         {
             Resolve(expr.right);
-            return null;
+            return null!;
         }
 
         public object VisitVariableExpr(Expr.Variable expr)
@@ -127,7 +149,7 @@ namespace Nox
             }
 
             ResolveLocal(expr, expr.name);
-            return null;
+            return null!;
         }
 
         public object VisitVarStmt(Stmt.Var stmt)
@@ -148,15 +170,9 @@ namespace Nox
             return null;
         }
 
-        private void Resolve(Expr expr)
-        {
-            expr.Accept(this);
-        }
+        private void Resolve(Expr expr) => expr.Accept(this);
 
-        private void Resolve(Stmt stmt)
-        {
-            stmt.Accept(this);
-        }
+        private void Resolve(Stmt stmt) => stmt.Accept(this);
 
         public void Resolve(List<Stmt> statements)
         {
@@ -166,15 +182,9 @@ namespace Nox
             }
         }
 
-        private void BeginScope()
-        {
-            scopes.Push(new Dictionary<string, bool>());
-        }
+        private void BeginScope() => scopes.Push([]);
 
-        private void EndScope()
-        {
-            scopes.Pop();
-        }
+        private void EndScope() => scopes.Pop();
 
         private void Declare(Token name)
         {
@@ -220,6 +230,60 @@ namespace Nox
             Resolve(function.body);
             EndScope();
             currentFunction = enclosingFunction;
+        }
+
+        public object VisitClassStmt(Stmt.Class stmt)
+        {
+            ClassType enclosingClass = currentClass;
+            currentClass = ClassType.CLASS;
+
+            Declare(stmt.name);
+            Define(stmt.name);
+
+            BeginScope();
+            scopes.Peek().Add("this", true);
+
+            foreach (Stmt.Function method in stmt.methods)
+            {
+                FunctionType declaration = FunctionType.METHOD;
+                if (method.name.lexeme.Equals("init"))
+                {
+                    declaration = FunctionType.INITIALIZER;
+                }
+
+                ResolveFunction(method, declaration);
+            }
+
+            EndScope();
+
+            currentClass = enclosingClass;
+            return null!;
+        }
+
+        public object VisitGetExpr(Expr.Get expr)
+        {
+            Resolve(expr.obj);
+            return null!;
+        }
+
+        public object VisitSetExpr(Expr.Set expr)
+        {
+            Resolve(expr.value);
+            Resolve(expr.obj);
+            return null!;
+        }
+
+        public object VisitThisExpr(Expr.This expr)
+        {
+            if (currentClass == ClassType.NONE)
+            {
+                Nox.Error(expr.keyword,
+                    "Can't use 'this' outside of a class.");
+                return null!;
+            }
+
+            ResolveLocal(expr, expr.keyword);
+            return null!;
         }
     }
 }

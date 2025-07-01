@@ -7,9 +7,12 @@ public abstract class Expr
         T VisitAssignExpr(Assign expr);
         T VisitBinaryExpr(Binary expr);
         T VisitCallExpr(Call expr);
+        T VisitGetExpr(Get expr);
         T VisitGroupingExpr(Grouping expr);
         T VisitLiteralExpr(Literal expr);
         T VisitLogicalExpr(Logical expr);
+        T VisitSetExpr(Set expr);
+        T VisitThisExpr(This expr);
         T VisitUnaryExpr(Unary expr);
         T VisitVariableExpr(Variable expr);
     }
@@ -62,6 +65,21 @@ public abstract class Expr
         public Token paren;
         public List<Expr> arguments;
     }
+    public class Get : Expr
+    {
+        public Get(Expr obj, Token name)
+        {
+            this.obj = obj;
+            this.name = name;
+        }
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitGetExpr(this);
+        }
+
+        public Expr obj;
+        public Token name;
+    }
     public class Grouping : Expr
     {
         public Grouping(Expr expression)
@@ -104,6 +122,36 @@ public abstract class Expr
         public Expr left;
         public Token op;
         public Expr right;
+    }
+    public class Set : Expr
+    {
+        public Set(Expr obj, Token name, Expr value)
+        {
+            this.obj = obj;
+            this.name = name;
+            this.value = value;
+        }
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitSetExpr(this);
+        }
+
+        public Expr obj;
+        public Token name;
+        public Expr value;
+    }
+    public class This : Expr
+    {
+        public This(Token keyword)
+        {
+            this.keyword = keyword;
+        }
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitThisExpr(this);
+        }
+
+        public Token keyword;
     }
     public class Unary : Expr
     {
