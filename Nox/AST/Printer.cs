@@ -77,12 +77,27 @@ namespace Nox.AST
             throw new NotImplementedException();
         }
 
+        string Stmt.IVisitor<string>.VisitIfStmt(Stmt.If stmt)
+        {
+            throw new NotImplementedException();
+        }
+
+        string Expr.IVisitor<string>.VisitLogicalExpr(Expr.Logical expr)
+        {
+            throw new NotImplementedException();
+        }
+
         string Expr.IVisitor<string>.VisitVariableExpr(Expr.Variable expr)
         {
             throw new NotImplementedException();
         }
 
         string Stmt.IVisitor<string>.VisitVarStmt(Stmt.Var stmt)
+        {
+            throw new NotImplementedException();
+        }
+
+        string Stmt.IVisitor<string>.VisitWhileStmt(Stmt.While stmt)
         {
             throw new NotImplementedException();
         }
