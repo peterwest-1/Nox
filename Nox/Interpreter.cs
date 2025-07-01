@@ -1,22 +1,30 @@
 ﻿
+using System;
+
 namespace Nox
 {
-    internal class Interpreter : Expr.IVisitor<object>
+    internal class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
-
-        public void Interpret(Expr expression)
+        private Habitat habitat = new();
+        public void Interpret(List<Stmt> statements)
         {
             try
             {
-                object value = Evaluate(expression);
-                Console.WriteLine(Stringify(value));
+                foreach (Stmt statement in statements)
+                {
+                    Execute(statement);
+                }
             }
             catch (NoxRuntimeException ex)
             {
-                Nox.RuntimeError(ex);
+                Nox.RuntimeException(ex);
             }
         }
 
+        private void Execute(Stmt stmt)
+        {
+            stmt.Accept(this);
+        }
 
         public object VisitBinaryExpr(Expr.Binary expr)
         {
@@ -109,7 +117,6 @@ namespace Nox
         private static void CheckNumberOperand(Token op, object operand)
         {
             if (operand is double) return;
-
             throw new NoxRuntimeException(op, "Operand must be a number.");
         }
 
@@ -135,6 +142,67 @@ namespace Nox
             }
 
             return ob.ToString();
+        }
+
+        public object VisitExpressionStmt(Stmt.Expression stmt)
+        {
+            Evaluate(stmt.expression);
+            return null;
+        }
+
+        public object VisitPrintStmt(Stmt.Print stmt)
+        {
+            object value = Evaluate(stmt.expression);
+            Console.WriteLine(Stringify(value));
+            return null;
+        }
+
+        object Expr.IVisitor<object>.VisitVariableExpr(Expr.Variable expr)
+        {
+            return habitat.Get(expr.name);
+        }
+
+        object Stmt.IVisitor<object>.VisitVarStmt(Stmt.Var stmt)
+        {
+            object value = null;
+            if (stmt.initializer != null)
+            {
+                value = Evaluate(stmt.initializer);
+            }
+
+            habitat.Define(stmt.name.lexeme, value);
+            return null;
+        }
+
+        object Expr.IVisitor<object>.VisitAssignExpr(Expr.Assign expr)
+        {
+            object value = Evaluate(expr.value);
+            habitat.Assign(expr.name, value);
+            return value;
+        }
+
+        object Stmt.IVisitor<object>.VisitBlockStmt(Stmt.Block stmt)
+        {
+            ExecuteBlock(stmt.statements, new Habitat(habitat));
+            return null;
+        }
+
+        private void ExecuteBlock(List<Stmt> statements, Habitat habitat)
+        {
+            Habitat previous = this.habitat;
+            try
+            {
+                this.habitat = habitat;
+
+                foreach (Stmt statement in statements)
+                {
+                    Execute(statement);
+                }
+            }
+            finally
+            {
+                this.habitat = previous;
+            }
         }
     }
 }

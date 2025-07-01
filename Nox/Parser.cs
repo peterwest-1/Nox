@@ -1,8 +1,6 @@
 ﻿
-using System;
-using System.Security.Claims;
 using static Expr;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static Stmt;
 
 namespace Nox
 {
@@ -20,21 +18,104 @@ namespace Nox
             this.tokens = tokens;
         }
 
-        public Expr Parse()
+        public List<Stmt> Parse()
+        {
+            List<Stmt> statements = [];
+            while (!IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            return statements;
+        }
+
+        private Stmt Statement()
+        {
+            if (Match(TokenType.PRINT)) return PrintStatement();
+            if (Match(TokenType.LEFT_BRACE)) return new Stmt.Block(Block());
+            return ExpressionStatement();
+        }
+
+        private List<Stmt> Block()
+        {
+            List<Stmt> statements = new();
+
+            while (!Check(TokenType.RIGHT_BRACE) && !IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            Consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+            return statements;
+        }
+
+        private Stmt Declaration()
         {
             try
             {
-                return Expression();
+                if (Match(TokenType.VAR)) return VarDeclaration();
+
+                return Statement();
             }
-            catch (ParseError)
+            catch (ParseError error)
             {
+                Synchronize();
                 return null;
             }
         }
 
+        private Stmt VarDeclaration()
+        {
+            Token name = Consume(TokenType.IDENTIFIER, "Expect variable name.");
+
+            Expr initializer = null;
+            if (Match(TokenType.EQUAL))
+            {
+                initializer = Expression();
+            }
+
+            Consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+            return new Var(name, initializer);
+        }
+
+        private Stmt ExpressionStatement()
+        {
+            Expr expr = Expression();
+            Consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+            return new Stmt.Expression(expr);
+        }
+
+        private Stmt PrintStatement()
+        {
+            Expr value = Expression();
+            Consume(TokenType.SEMICOLON, "Expect ';' after value.");
+            return new Stmt.Print(value);
+        }
+
         private Expr Expression()
         {
-            return Equality();
+            return Assignment();
+        }
+
+        private Expr Assignment()
+        {
+            Expr expr = Equality();
+
+            if (Match(TokenType.EQUAL))
+            {
+                Token equals = Previous();
+                Expr value = Assignment();
+
+                if (expr is Variable v)
+                {
+                    Token name = v.name;
+                    return new Assign(name, value);
+                }
+
+                Error(equals, "Invalid assignment target.");
+            }
+
+            return expr;
         }
 
         private Expr Equality()
@@ -111,37 +192,16 @@ namespace Nox
             if (Match(TokenType.TRUE)) return new Expr.Literal(true);
             if (Match(TokenType.NIL)) return new Expr.Literal(null);
 
-            //if (Match(TokenType.NUMBER))
-            //{
-            //    var literal = Previous().literal;
-            //    if (literal == null)
-            //    {
-            //        //var error = new NoxError(NoxErrorType.PARSE_ERROR_EXPECT_EXPRESSION, current, Previous().lexeme);
-            //        //throw new NoxParseException(Previous(), "NUMBER token has null literal value.", error);
-            //        //TODO handle this case properly
-            //    }
-
-            //    double numericValue;
-            //    if (literal is double d)
-            //        numericValue = d;
-            //    else if (literal is int i)
-            //        numericValue = (double)i;
-            //    else if (literal is string s && double.TryParse(s, out double parsed))
-            //        numericValue = parsed;
-            //    else
-            //    {
-            //        //var error = new NoxError(NoxErrorType.PARSE_ERROR_EXPECT_EXPRESSION, current, Previous().lexeme);
-            //        //throw new NoxParseException(Previous(), $"Unable to convert NUMBER literal to double: {literal}", error);
-            //        //TODO handle this case properly
-            //        throw new Exception();
-            //    }
-
-            //    return new Literal(numericValue);
-            //}
 
             if (Match(TokenType.NUMBER, TokenType.STRING))
             {
                 return new Literal(Previous().literal);
+            }
+
+
+            if (Match(TokenType.IDENTIFIER))
+            {
+                return new Variable(Previous());
             }
 
             if (Match(TokenType.LEFT_PAREN))

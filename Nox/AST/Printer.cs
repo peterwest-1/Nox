@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Nox.AST
 {
-    internal class Printer : Expr.IVisitor<string>
+    internal class Printer : Expr.IVisitor<string>, Stmt.IVisitor<string>
     {
         public string Print(Expr expr)
         {
@@ -16,6 +16,11 @@ namespace Nox.AST
         {
             return Parenthesize(expr.op.lexeme,
                        expr.left, expr.right);
+        }
+
+        public string VisitExpressionStmt(Stmt.Expression stmt)
+        {
+            throw new NotImplementedException();
         }
 
         public string VisitGroupingExpr(Expr.Grouping expr)
@@ -37,6 +42,11 @@ namespace Nox.AST
             return expr.value.ToString() ?? "LITERAL VALUE NULL";
         }
 
+        public string VisitPrintStmt(Stmt.Print stmt)
+        {
+            throw new NotImplementedException();
+        }
+
         public string VisitUnaryExpr(Expr.Unary expr)
         {
             return Parenthesize(expr.op.lexeme, expr.right);
@@ -55,6 +65,26 @@ namespace Nox.AST
             builder.Append(')');
 
             return builder.ToString();
+        }
+
+        string Expr.IVisitor<string>.VisitAssignExpr(Expr.Assign expr)
+        {
+            throw new NotImplementedException();
+        }
+
+        string Stmt.IVisitor<string>.VisitBlockStmt(Stmt.Block stmt)
+        {
+            throw new NotImplementedException();
+        }
+
+        string Expr.IVisitor<string>.VisitVariableExpr(Expr.Variable expr)
+        {
+            throw new NotImplementedException();
+        }
+
+        string Stmt.IVisitor<string>.VisitVarStmt(Stmt.Var stmt)
+        {
+            throw new NotImplementedException();
         }
     }
 }

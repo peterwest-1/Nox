@@ -1,28 +1,31 @@
 {
-    "profiles": {
-        "Nox": {
-            "commandName": "Project",
-            "commandLineArgs": ""
-        },
-        "Nox - tokenize": {
-            "commandName": "Project",
-            "commandLineArgs": "tokenize C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
-        },
-        "Nox - parse": {
-            "commandName": "Project",
-            "commandLineArgs": "parse C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
-        },
-        "Nox - evaluate": {
-            "commandName": "Project",
-            "commandLineArgs": "evaluate C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
-        },
-        "Nox - run": {
-            "commandName": "Project",
-            "commandLineArgs": "run C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
-        },
-        "Nox - genast": {
-            "commandName": "Project",
-            "commandLineArgs": "genast C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\Generated\\"
-        }
+  "profiles": {
+    "Nox": {
+      "commandName": "Project"
+    },
+    "Nox - tokenize": {
+      "commandName": "Project",
+      "commandLineArgs": "tokenize C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
+    },
+    "Nox - parse": {
+      "commandName": "Project",
+      "commandLineArgs": "parse C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
+    },
+    "Nox - evaluate": {
+      "commandName": "Project",
+      "commandLineArgs": "evaluate C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "Nox - run": {
+      "commandName": "Project",
+      "commandLineArgs": "run C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\test\\test.nox"
+    },
+    "Nox - genast": {
+      "commandName": "Project",
+      "commandLineArgs": "genast C:\\Users\\peter\\Documents\\Programming\\Nox\\Nox\\Generated\\"
     }
+  }
 }

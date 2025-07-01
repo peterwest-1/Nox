@@ -45,10 +45,10 @@ namespace Nox
             if (hadError) return;
 
             Parser parser = new(tokens);
-            Expr expression = parser.Parse();
+            List<Stmt> statements = parser.Parse();
             if (hadError) return;
 
-            Console.WriteLine(new Printer().Print(expression));
+            //Console.WriteLine(new Printer().Print(statements));
         }
 
         public static void EvaluateFile(string filename)
@@ -59,10 +59,10 @@ namespace Nox
             if (hadError) return;
 
             Parser parser = new(tokens);
-            Expr expression = parser.Parse();
+            List<Stmt> statements = parser.Parse();
             if (hadError) return;
 
-            interpreter.Interpret(expression);
+            interpreter.Interpret(statements);
             if (hadError) return;
             if (hadRuntimeError) return; //?
         }
@@ -85,10 +85,10 @@ namespace Nox
             if (hadError) return;
 
             Parser parser = new(tokens);
-            Expr expression = parser.Parse();
+            List<Stmt> statements = parser.Parse();
             if (hadError) return;
 
-            interpreter.Interpret(expression);
+            interpreter.Interpret(statements);
         }
         public static void Error(int line, string message)
         {
@@ -113,7 +113,7 @@ namespace Nox
             hadError = true;
         }
 
-        public static void RuntimeError(NoxRuntimeException exception)
+        public static void RuntimeException(NoxRuntimeException exception)
         {
             Console.Error.WriteLine(exception.Message +
                 "\n[line " + exception.Token.line + "]");

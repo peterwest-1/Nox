@@ -1,6 +1,4 @@
 ﻿
-using System;
-using System.IO;
 using System.Text;
 
 namespace Nox.AST
@@ -11,10 +9,19 @@ namespace Nox.AST
         public static void Generate(string outputDirectory)
         {
             DefineAST(outputDirectory, "Expr", [
+              "Assign   : Token name, Expr value",
               "Binary   : Expr left, Token op, Expr right",
               "Grouping : Expr expression",
               "Literal  : object value",
-              "Unary    : Token op, Expr right"
+              "Unary    : Token op, Expr right",
+              "Variable : Token name"
+            ]);
+
+            DefineAST(outputDirectory, "Stmt", [
+              "Block      : List<Stmt> statements",
+              "Expression : Expr expression",
+              "Print      : Expr expression",
+              "Var        : Token name, Expr initializer"
             ]);
         }
 
@@ -81,7 +88,7 @@ namespace Nox.AST
 
         private static void DefineVisitor(StreamWriter writer, string baseName, List<string> types)
         {
-            writer.WriteLine("    interface IVisitor<T>");
+            writer.WriteLine("    public interface IVisitor<T>");
             writer.WriteLine("    {");
 
             foreach (string type in types)
