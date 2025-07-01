@@ -15,7 +15,7 @@ namespace Nox
             {
                 Console.WriteLine("Usage: tokenize <filename.nox>");
                 Console.WriteLine("Usage: parse <filename.nox>");
-                Environment.Exit(1);
+                System.Environment.Exit(1);
             }
 
             string secondArgument = args[1];

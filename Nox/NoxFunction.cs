@@ -1,0 +1,45 @@
+﻿
+using static Stmt;
+
+namespace Nox
+{
+    internal class NoxFunction : INoxCallable
+    {
+        private Function declaration;
+        private Environment closure;
+
+
+        public NoxFunction(Function declaration, Environment closure)
+        {
+            this.declaration = declaration;
+            this.closure = closure;
+        }
+
+        public int Arity() => declaration.paras.Count;
+
+        public object Call(Interpreter interpreter, List<object> arguments)
+        {
+            Environment environment = new(closure);
+            for (int i = 0; i < declaration.paras.Count; i++)
+            {
+                environment.Define(declaration.paras.ElementAt(i).lexeme,
+                    arguments.ElementAt(i));
+            }
+
+            try
+            {
+                interpreter.ExecuteBlock(declaration.body, environment);
+            }
+            catch (NoxReturnException returnValue)
+            {
+                return returnValue.value;
+            }
+            return null;
+        }
+
+        override public string ToString()
+        {
+            return "<fn " + declaration.name.lexeme + ">";
+        }
+    }
+}

@@ -1,27 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace Nox
 {
     //Environment is already in .NET, changing to "Habitat"
-    internal class Habitat
+    internal class Environment
     {
-        Habitat enclosing;
+        Environment? enclosing;
         private readonly Dictionary<string, object> values = [];
 
-        public Habitat()
+        public Environment()
         {
             enclosing = null;
         }
 
-        public Habitat(Habitat enclosing)
+        public Environment(Environment enclosing)
         {
             this.enclosing = enclosing;
         }
-
 
         public void Define(string name, object value)
         {

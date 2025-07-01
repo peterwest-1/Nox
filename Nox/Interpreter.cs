@@ -1,11 +1,20 @@
 ﻿
-using System;
+
+using Nox.Callables;
 
 namespace Nox
 {
     internal class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
-        private Habitat habitat = new();
+        public readonly Environment globals = new();
+        private Environment environment;
+
+        public Interpreter()
+        {
+            environment = globals;
+            globals.Define(ClockCallable.name, new ClockCallable());
+        }
+
         public void Interpret(List<Stmt> statements)
         {
             try
@@ -159,7 +168,7 @@ namespace Nox
 
         object Expr.IVisitor<object>.VisitVariableExpr(Expr.Variable expr)
         {
-            return habitat.Get(expr.name);
+            return environment.Get(expr.name);
         }
 
         object Stmt.IVisitor<object>.VisitVarStmt(Stmt.Var stmt)
@@ -170,29 +179,29 @@ namespace Nox
                 value = Evaluate(stmt.initializer);
             }
 
-            habitat.Define(stmt.name.lexeme, value);
+            environment.Define(stmt.name.lexeme, value);
             return null;
         }
 
         object Expr.IVisitor<object>.VisitAssignExpr(Expr.Assign expr)
         {
             object value = Evaluate(expr.value);
-            habitat.Assign(expr.name, value);
+            environment.Assign(expr.name, value);
             return value;
         }
 
         object Stmt.IVisitor<object>.VisitBlockStmt(Stmt.Block stmt)
         {
-            ExecuteBlock(stmt.statements, new Habitat(habitat));
+            ExecuteBlock(stmt.statements, new Environment(environment));
             return null;
         }
 
-        private void ExecuteBlock(List<Stmt> statements, Habitat habitat)
+        public void ExecuteBlock(List<Stmt> statements, Environment environment)
         {
-            Habitat previous = this.habitat;
+            Environment previous = this.environment;
             try
             {
-                this.habitat = habitat;
+                this.environment = environment;
 
                 foreach (Stmt statement in statements)
                 {
@@ -201,7 +210,7 @@ namespace Nox
             }
             finally
             {
-                this.habitat = previous;
+                this.environment = previous;
             }
         }
 
@@ -241,6 +250,50 @@ namespace Nox
                 Execute(stmt.body);
             }
             return null;
+        }
+
+        object Expr.IVisitor<object>.VisitCallExpr(Expr.Call expr)
+        {
+            object callee = Evaluate(expr.callee);
+
+            List<object> arguments = [];
+            foreach (Expr argument in expr.arguments)
+            {
+                arguments.Add(Evaluate(argument));
+            }
+
+            if (callee is not INoxCallable)
+            {
+                throw new NoxRuntimeException(expr.paren,
+                    "Can only call functions and classes.");
+            }
+
+            INoxCallable function = (INoxCallable)callee;
+
+            if (arguments.Count != function.Arity())
+            {
+                throw new NoxRuntimeException(expr.paren, "Expected " +
+                    function.Arity() + " arguments but got " +
+                    arguments.Count + ".");
+            }
+
+
+            return function.Call(this, arguments);
+        }
+
+        object Stmt.IVisitor<object>.VisitFunctionStmt(Stmt.Function stmt)
+        {
+            NoxFunction function = new NoxFunction(stmt, environment);
+            environment.Define(stmt.name.lexeme, function);
+            return null;
+        }
+
+        public object VisitReturnStmt(Stmt.Return stmt)
+        {
+            Object value = null;
+            if (stmt.value != null) value = Evaluate(stmt.value);
+
+            throw new NoxReturnException(value);
         }
     }
 }

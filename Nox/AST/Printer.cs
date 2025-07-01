@@ -1,6 +1,6 @@
 ﻿
+
 using System.Globalization;
-using System.Linq.Expressions;
 using System.Text;
 
 namespace Nox.AST
@@ -12,6 +12,11 @@ namespace Nox.AST
             return expr.Accept(this);
         }
 
+        public string Print(Stmt stmt)
+        {
+            return stmt.Accept(this);
+        }
+
         public string VisitBinaryExpr(Expr.Binary expr)
         {
             return Parenthesize(expr.op.lexeme,
@@ -20,7 +25,7 @@ namespace Nox.AST
 
         public string VisitExpressionStmt(Stmt.Expression stmt)
         {
-            throw new NotImplementedException();
+            return Parenthesize(";", stmt.expression);
         }
 
         public string VisitGroupingExpr(Expr.Grouping expr)
@@ -44,7 +49,7 @@ namespace Nox.AST
 
         public string VisitPrintStmt(Stmt.Print stmt)
         {
-            throw new NotImplementedException();
+            return Parenthesize("print", stmt.expression);
         }
 
         public string VisitUnaryExpr(Expr.Unary expr)
@@ -69,35 +74,110 @@ namespace Nox.AST
 
         string Expr.IVisitor<string>.VisitAssignExpr(Expr.Assign expr)
         {
-            throw new NotImplementedException();
+            return ParenthesizeParts("=", expr.name.lexeme, expr.value);
         }
 
         string Stmt.IVisitor<string>.VisitBlockStmt(Stmt.Block stmt)
         {
-            throw new NotImplementedException();
+            StringBuilder builder = new StringBuilder();
+            builder.Append("(block ");
+
+            foreach (Stmt statement in stmt.statements)
+            {
+                builder.Append(statement.Accept(this));
+            }
+
+            builder.Append(")");
+            return builder.ToString();
         }
 
         string Stmt.IVisitor<string>.VisitIfStmt(Stmt.If stmt)
         {
-            throw new NotImplementedException();
+            if (stmt.elseBranch == null)
+            {
+                return ParenthesizeParts("if", stmt.condition, stmt.thenBranch);
+            }
+
+            return ParenthesizeParts("if-else", stmt.condition, stmt.thenBranch,
+                stmt.elseBranch);
         }
 
         string Expr.IVisitor<string>.VisitLogicalExpr(Expr.Logical expr)
         {
-            throw new NotImplementedException();
+            return Parenthesize(expr.op.lexeme, expr.left, expr.right);
         }
 
         string Expr.IVisitor<string>.VisitVariableExpr(Expr.Variable expr)
         {
-            throw new NotImplementedException();
+            return expr.name.lexeme;
         }
 
         string Stmt.IVisitor<string>.VisitVarStmt(Stmt.Var stmt)
         {
-            throw new NotImplementedException();
+            if (stmt.initializer == null)
+            {
+                return ParenthesizeParts("var", stmt.name);
+            }
+
+            return ParenthesizeParts("var", stmt.name, "=", stmt.initializer);
         }
 
         string Stmt.IVisitor<string>.VisitWhileStmt(Stmt.While stmt)
+        {
+            return ParenthesizeParts("while", stmt.condition, stmt.body);
+        }
+
+        private string ParenthesizeParts(string name, params object[] parts)
+        {
+            StringBuilder builder = new();
+
+            builder.Append("(").Append(name);
+            Transform(builder, parts);
+            builder.Append(")");
+
+            return builder.ToString();
+        }
+
+        private void Transform(StringBuilder builder, params object[] parts)
+        {
+            foreach (object part in parts)
+            {
+                builder.Append(" ");
+                switch (part)
+                {
+                    case Expr:
+                        builder.Append(((Expr)part).Accept(this));
+                        //> Statements and State omit
+                        break;
+                    case Stmt:
+                        builder.Append(((Stmt)part).Accept(this));
+                        //< Statements and State omit
+                        break;
+                    case Token:
+                        builder.Append(((Token)part).lexeme);
+                        break;
+                    //else if (part is List)
+                    //{
+                    //    transform(builder, ((List)part).toArray());
+                    //}
+                    default:
+                        builder.Append(part);
+                        break;
+                }
+            }
+        }
+
+        string Expr.IVisitor<string>.VisitCallExpr(Expr.Call expr)
+        {
+            throw new NotImplementedException();
+        }
+
+        string Stmt.IVisitor<string>.VisitFunctionStmt(Stmt.Function stmt)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string VisitReturnStmt(Stmt.Return stmt)
         {
             throw new NotImplementedException();
         }

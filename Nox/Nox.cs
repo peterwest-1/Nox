@@ -1,6 +1,4 @@
 ﻿
-using Nox.AST;
-using System.Linq.Expressions;
 
 namespace Nox
 {
@@ -19,8 +17,8 @@ namespace Nox
         {
             string contents = File.ReadAllText(Path.GetFullPath(path));
             Run(contents);
-            if (hadError) { Environment.Exit(65); }
-            if (HadRuntimeError) { Environment.Exit(70); }
+            if (hadError) { System.Environment.Exit(65); }
+            if (HadRuntimeError) { System.Environment.Exit(70); }
 
         }
         public static void TokenizeFile(string filename)
