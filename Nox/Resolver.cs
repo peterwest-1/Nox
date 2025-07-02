@@ -3,15 +3,8 @@ using System;
 
 namespace Nox
 {
-    internal class Resolver : Expr.IVisitor<object>, Stmt.IVisitor<object>
+    internal class Resolver(Interpreter interpreter) : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
-        enum FunctionType
-        {
-            NONE,
-            FUNCTION,
-            INITIALIZER,
-            METHOD,
-        }
 
         enum ClassType
         {
@@ -20,17 +13,11 @@ namespace Nox
             SUBCLASS
         }
 
-        private readonly Interpreter interpreter;
+        private readonly Interpreter interpreter = interpreter;
 
         private readonly Stack<Dictionary<string, bool>> scopes = [];
         private FunctionType currentFunction = FunctionType.NONE;
         private ClassType currentClass = ClassType.NONE;
-
-
-        public Resolver(Interpreter interpreter)
-        {
-            this.interpreter = interpreter;
-        }
 
         public object VisitAssignExpr(Expr.Assign expr)
         {
@@ -257,16 +244,16 @@ namespace Nox
             if (stmt.superclass != null)
             {
                 BeginScope();
-                scopes.Peek()[Constants.SUPER] = true;
+                scopes.Peek()[Keywords.SUPER] = true;
             }
 
             BeginScope();
-            scopes.Peek()[Constants.THIS] = true;
+            scopes.Peek()[Keywords.THIS] = true;
 
             foreach (Stmt.Function method in stmt.methods)
             {
                 FunctionType declaration = FunctionType.METHOD;
-                if (method.name.lexeme.Equals(Constants.INIT))
+                if (method.name.lexeme.Equals(Keywords.INIT))
                 {
                     declaration = FunctionType.INITIALIZER;
                 }

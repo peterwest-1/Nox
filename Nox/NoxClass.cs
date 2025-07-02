@@ -16,7 +16,7 @@ namespace Nox
 
         public int Arity()
         {
-            NoxFunction initializer = FindMethod(Constants.INIT);
+            NoxFunction initializer = FindMethod(Keywords.INIT);
             if (initializer == null) return 0;
             return initializer.Arity();
         }
@@ -24,7 +24,7 @@ namespace Nox
         public object Call(Interpreter interpreter, List<object> arguments)
         {
             NoxInstance instance = new(this);
-            NoxFunction initializer = FindMethod(Constants.INIT);
+            NoxFunction initializer = FindMethod(Keywords.INIT);
             if (initializer != null)
             {
                 initializer.Bind(instance).Call(interpreter, arguments);

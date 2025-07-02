@@ -21,8 +21,9 @@ namespace Nox
             ["or"] = TokenType.OR,
             ["print"] = TokenType.PRINT,
             ["return"] = TokenType.RETURN,
-            [Constants.SUPER] = TokenType.SUPER,
-            [Constants.THIS] = TokenType.THIS,
+            [Keywords.SUPER] = TokenType.SUPER,
+            [Keywords.THIS] = TokenType.THIS,
+            [Keywords.INHERIT] = TokenType.INHERIT,
             ["true"] = TokenType.TRUE,
             ["var"] = TokenType.VAR,
             ["while"] = TokenType.WHILE

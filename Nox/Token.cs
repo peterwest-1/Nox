@@ -3,20 +3,12 @@ using System.Globalization;
 
 namespace Nox
 {
-    public class Token
+    public class Token(TokenType type, string lexeme, object? literal, int line)
     {
-        public readonly TokenType type;
-        public readonly string lexeme;
-        public readonly object? literal;
-        public readonly int line;
-
-        public Token(TokenType type, string lexeme, object? literal, int line)
-        {
-            this.type = type;
-            this.lexeme = lexeme;
-            this.literal = literal;
-            this.line = line;
-        }
+        public readonly TokenType type = type;
+        public readonly string lexeme = lexeme;
+        public readonly object? literal = literal;
+        public readonly int line = line;
 
         public override string ToString()
         {

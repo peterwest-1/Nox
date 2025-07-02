@@ -133,7 +133,7 @@ namespace Nox
 
         private List<Stmt> Block()
         {
-            List<Stmt> statements = new();
+            List<Stmt> statements = [];
 
             while (!Check(TokenType.RIGHT_BRACE) && !IsAtEnd())
             {
@@ -149,7 +149,7 @@ namespace Nox
             try
             {
                 if (Match(TokenType.CLASS)) return ClassDeclaration();
-                if (Match(TokenType.FUN)) return Function("function");
+                if (Match(TokenType.FUN)) return Function(FunctionType.FUNCTION);
                 if (Match(TokenType.VAR)) return VarDeclaration();
 
                 return Statement();
@@ -166,7 +166,7 @@ namespace Nox
             Token name = Consume(TokenType.IDENTIFIER, "Expect class name.");
 
             Variable superclass = null;
-            if (Match(TokenType.LESS))// inheritance key
+            if (Match(TokenType.INHERIT))// inheritance key
             {
                 Consume(TokenType.IDENTIFIER, "Expect superclass name.");
                 superclass = new Variable(Previous());
@@ -177,7 +177,7 @@ namespace Nox
             List<Function> methods = [];
             while (!Check(TokenType.RIGHT_BRACE) && !IsAtEnd())
             {
-                methods.Add(Function("method"));
+                methods.Add(Function(FunctionType.METHOD));
             }
 
             Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
@@ -186,7 +186,7 @@ namespace Nox
         }
 
 
-        private Function Function(string kind)
+        private Function Function(FunctionType kind)
         {
             Token name = Consume(TokenType.IDENTIFIER, "Expect " + kind + " name.");
             Consume(TokenType.LEFT_PAREN, "Expect '(' after " + kind + " name.");
@@ -215,7 +215,7 @@ namespace Nox
         {
             Token name = Consume(TokenType.IDENTIFIER, "Expect variable name.");
 
-            Expr initializer = null;
+            Expr? initializer = null;
             if (Match(TokenType.EQUAL))
             {
                 initializer = Expression();
@@ -389,7 +389,7 @@ namespace Nox
             return expr;
         }
 
-        private Expr FinishCall(Expr callee)
+        private Call FinishCall(Expr callee)
         {
             List<Expr> arguments = [];
             if (!Check(TokenType.RIGHT_PAREN))

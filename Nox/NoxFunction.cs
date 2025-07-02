@@ -33,11 +33,11 @@ namespace Nox
             }
             catch (NoxReturnException returnValue)
             {
-                if (IsInitializer) return closure.GetAt(0, Constants.THIS);
+                if (IsInitializer) return closure.GetAt(0, Keywords.THIS);
                 return returnValue.value;
             }
 
-            if (IsInitializer) return closure.GetAt(0, Constants.THIS);
+            if (IsInitializer) return closure.GetAt(0, Keywords.THIS);
             return null;
         }
 
@@ -49,7 +49,7 @@ namespace Nox
         public NoxFunction Bind(NoxInstance instance)
         {
             Environment environment = new(closure);
-            environment.Define(Constants.THIS, instance);
+            environment.Define(Keywords.THIS, instance);
             return new NoxFunction(declaration, environment, IsInitializer);
         }
     }

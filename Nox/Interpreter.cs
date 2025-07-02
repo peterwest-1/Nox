@@ -343,7 +343,7 @@ namespace Nox
             if (stmt.superclass != null)
             {
                 environment = new Environment(environment);
-                environment.Define(Constants.SUPER, superclass);
+                environment.Define(Keywords.SUPER, superclass);
             }
 
 
@@ -351,7 +351,7 @@ namespace Nox
             Dictionary<string, NoxFunction> methods = [];
             foreach (Stmt.Function method in stmt.methods)
             {
-                NoxFunction function = new(method, environment, method.name.lexeme.Equals(Constants.INIT));
+                NoxFunction function = new(method, environment, method.name.lexeme.Equals(Keywords.INIT));
                 methods[method.name.lexeme] = function;
             }
 
