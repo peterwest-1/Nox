@@ -29,9 +29,10 @@ public abstract class Stmt
     }
     public class Class : Stmt
     {
-        public Class(Token name, List<Stmt.Function> methods)
+        public Class(Token name, Expr.Variable superclass, List<Stmt.Function> methods)
         {
             this.name = name;
+            this.superclass = superclass;
             this.methods = methods;
         }
         public override T Accept<T>(IVisitor<T> visitor)
@@ -40,6 +41,7 @@ public abstract class Stmt
         }
 
         public Token name;
+        public Expr.Variable superclass;
         public List<Stmt.Function> methods;
     }
     public class Expression : Stmt

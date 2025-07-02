@@ -7,7 +7,7 @@ namespace Nox
     //Environment is already in .NET, changing to "Habitat"
     internal class Environment
     {
-        Environment? enclosing;
+        public Environment? enclosing;
         private readonly Dictionary<string, object> values = [];
 
         public Environment()

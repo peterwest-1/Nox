@@ -164,9 +164,17 @@ namespace Nox
         private Stmt ClassDeclaration()
         {
             Token name = Consume(TokenType.IDENTIFIER, "Expect class name.");
+
+            Variable superclass = null;
+            if (Match(TokenType.LESS))// inheritance key
+            {
+                Consume(TokenType.IDENTIFIER, "Expect superclass name.");
+                superclass = new Variable(Previous());
+            }
+
             Consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
 
-            List<Stmt.Function> methods = [];
+            List<Function> methods = [];
             while (!Check(TokenType.RIGHT_BRACE) && !IsAtEnd())
             {
                 methods.Add(Function("method"));
@@ -174,7 +182,7 @@ namespace Nox
 
             Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
 
-            return new Stmt.Class(name, methods);
+            return new Class(name, superclass, methods);
         }
 
 
@@ -410,7 +418,16 @@ namespace Nox
 
             if (Match(TokenType.NUMBER, TokenType.STRING)) return new Literal(Previous().literal);
 
-            if (Match(TokenType.THIS)) return new Expr.This(Previous());
+            if (Match(TokenType.SUPER))
+            {
+                Token keyword = Previous();
+                Consume(TokenType.DOT, "Expect '.' after 'super'.");
+                Token method = Consume(TokenType.IDENTIFIER, "Expect superclass method name.");
+                return new Super(keyword, method);
+            }
+
+
+            if (Match(TokenType.THIS)) return new This(Previous());
             if (Match(TokenType.IDENTIFIER)) return new Variable(Previous());
 
             if (Match(TokenType.LEFT_PAREN))

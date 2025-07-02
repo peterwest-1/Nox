@@ -16,7 +16,8 @@ namespace Nox
         enum ClassType
         {
             NONE,
-            CLASS
+            CLASS,
+            SUBCLASS
         }
 
         private readonly Interpreter interpreter;
@@ -239,8 +240,28 @@ namespace Nox
             Declare(stmt.name);
             Define(stmt.name);
 
+            if (stmt.superclass != null &&
+                stmt.name.lexeme.Equals(stmt.superclass.name.lexeme))
+            {
+                Nox.Error(stmt.superclass.name,
+                    "A class can't inherit from itself.");
+            }
+
+
+            if (stmt.superclass != null)
+            {
+                currentClass = ClassType.SUBCLASS;
+                Resolve(stmt.superclass);
+            }
+
+            if (stmt.superclass != null)
+            {
+                BeginScope();
+                scopes.Peek()[Constants.SUPER] = true;
+            }
+
             BeginScope();
-            scopes.Peek().Add("this", true);
+            scopes.Peek()[Constants.THIS] = true;
 
             foreach (Stmt.Function method in stmt.methods)
             {
@@ -254,6 +275,8 @@ namespace Nox
             }
 
             EndScope();
+
+            if (stmt.superclass != null) EndScope();
 
             currentClass = enclosingClass;
             return null!;
@@ -283,6 +306,22 @@ namespace Nox
 
             ResolveLocal(expr, expr.keyword);
             return null!;
+        }
+
+        object Expr.IVisitor<object>.VisitSuperExpr(Expr.Super expr)
+        {
+            if (currentClass == ClassType.NONE)
+            {
+                Nox.Error(expr.keyword,
+                    "Can't use 'super' outside of a class.");
+            }
+            else if (currentClass != ClassType.SUBCLASS)
+            {
+                Nox.Error(expr.keyword,
+                    "Can't use 'super' in a class with no superclass.");
+            }
+            ResolveLocal(expr, expr.keyword);
+            return null;
         }
     }
 }

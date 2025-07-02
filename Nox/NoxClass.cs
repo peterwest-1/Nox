@@ -4,12 +4,13 @@ namespace Nox
     internal class NoxClass : INoxCallable
     {
         public string name;
-
+        public NoxClass superclass;
         private Dictionary<string, NoxFunction> methods;
 
-        public NoxClass(string name, Dictionary<string, NoxFunction> methods)
+        public NoxClass(string name, NoxClass superclass, Dictionary<string, NoxFunction> methods)
         {
             this.name = name;
+            this.superclass = superclass;
             this.methods = methods;
         }
 
@@ -36,6 +37,11 @@ namespace Nox
             if (methods.ContainsKey(name))
             {
                 return methods.GetValueOrDefault(name);
+            }
+
+            if (superclass != null)
+            {
+                return superclass.FindMethod(name);
             }
 
             return null;

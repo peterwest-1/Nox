@@ -327,15 +327,41 @@ namespace Nox
 
         public object VisitClassStmt(Stmt.Class stmt)
         {
+            object superclass = null;
+            if (stmt.superclass != null)
+            {
+                superclass = Evaluate(stmt.superclass);
+                if ((superclass is not NoxClass))
+                {
+                    throw new NoxRuntimeException(stmt.superclass.name,
+                        "Superclass must be a class.");
+                }
+            }
+
             environment.Define(stmt.name.lexeme, null);
+
+            if (stmt.superclass != null)
+            {
+                environment = new Environment(environment);
+                environment.Define(Constants.SUPER, superclass);
+            }
+
+
+
             Dictionary<string, NoxFunction> methods = [];
             foreach (Stmt.Function method in stmt.methods)
             {
                 NoxFunction function = new(method, environment, method.name.lexeme.Equals(Constants.INIT));
-                methods.Add(method.name.lexeme, function);
+                methods[method.name.lexeme] = function;
             }
 
-            NoxClass klass = new(stmt.name.lexeme, methods);
+            NoxClass klass = new(stmt.name.lexeme, (NoxClass)superclass, methods);
+
+            if (superclass != null)
+            {
+                environment = environment.enclosing;
+            }
+
             environment.Assign(stmt.name, klass);
             return null;
         }
@@ -370,6 +396,26 @@ namespace Nox
         public object VisitThisExpr(Expr.This expr)
         {
             return LookUpVariable(expr.keyword, expr);
+        }
+
+        object Expr.IVisitor<object>.VisitSuperExpr(Expr.Super expr)
+        {
+            int distance = locals[expr];
+            NoxClass superclass = (NoxClass)environment.GetAt(
+                distance, "super");
+
+            NoxInstance obj = (NoxInstance)environment.GetAt(
+      distance - 1, "this");
+
+            NoxFunction method = superclass.FindMethod(expr.method.lexeme);
+
+            if (method == null)
+            {
+                throw new NoxRuntimeException(expr.method,
+                    "Undefined property '" + expr.method.lexeme + "'.");
+            }
+
+            return method.Bind(obj);
         }
     }
 }
