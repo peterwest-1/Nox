@@ -1,4 +1,5 @@
 ﻿
+using Nox.InterpreterImpl;
 
 namespace Nox.Callables
 {
@@ -11,7 +12,7 @@ namespace Nox.Callables
 
         public object Call(Interpreter interpreter, List<object> arguments)
         {
-            return (double)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
+            return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
         }
 
         public override string ToString() => "<native fn>";

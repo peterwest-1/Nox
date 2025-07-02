@@ -1,5 +1,10 @@
 ﻿
 
+using Nox.AST;
+using Nox.InterpreterImpl;
+using Nox.ParserImpl;
+using Nox.ResolverImpl;
+
 namespace Nox
 {
     internal class Nox
@@ -27,7 +32,6 @@ namespace Nox
             Tokenizer tokenizer = new(contents);
             List<Token> tokens = tokenizer.Tokenize();
 
-            // For now, just print the tokens.
             foreach (Token token in tokens)
             {
                 Console.WriteLine(token);
@@ -46,7 +50,7 @@ namespace Nox
             List<Stmt> statements = parser.Parse();
             if (hadError) return;
 
-            //Console.WriteLine(new Printer().Print(statements));
+            Console.WriteLine(new Printer().Print(statements));
         }
 
         public static void EvaluateFile(string filename)
@@ -60,13 +64,13 @@ namespace Nox
             List<Stmt> statements = parser.Parse();
             if (hadError) return;
 
-
             Resolver resolver = new(interpreter);
             resolver.Resolve(statements);
+            if (hadError) return;
 
             interpreter.Interpret(statements);
             if (hadError) return;
-            if (hadRuntimeError) return; //?
+            if (hadRuntimeError) return; 
         }
 
         private static void RunPrompt()

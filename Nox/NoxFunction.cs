@@ -1,4 +1,5 @@
 ﻿
+using Nox.InterpreterImpl;
 using static Stmt;
 
 namespace Nox
@@ -23,8 +24,8 @@ namespace Nox
             Environment environment = new(closure);
             for (int i = 0; i < declaration.paras.Count; i++)
             {
-                environment.Define(declaration.paras.ElementAt(i).lexeme,
-                    arguments.ElementAt(i));
+                environment.Define(declaration.paras[i].lexeme,
+                    arguments[i]);
             }
 
             try
@@ -33,7 +34,11 @@ namespace Nox
             }
             catch (NoxReturnException returnValue)
             {
-                if (IsInitializer) return closure.GetAt(0, Keywords.THIS);
+                if (IsInitializer)
+                {
+                    var clos = closure.GetAt(0, Keywords.THIS);
+                    return clos;
+                }
                 return returnValue.value;
             }
 

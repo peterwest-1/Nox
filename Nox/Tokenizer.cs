@@ -10,23 +10,34 @@ namespace Nox
 
         private static readonly Dictionary<string, TokenType> keywords = new()
         {
-            ["and"] = TokenType.AND,
-            ["class"] = TokenType.CLASS,
-            ["else"] = TokenType.ELSE,
-            ["false"] = TokenType.FALSE,
-            ["for"] = TokenType.FOR,
-            ["fun"] = TokenType.FUN,
-            ["if"] = TokenType.IF,
-            ["nil"] = TokenType.NIL,
-            ["or"] = TokenType.OR,
-            ["print"] = TokenType.PRINT,
-            ["return"] = TokenType.RETURN,
+            // Class and inheritance keywords
+            [Keywords.CLASS] = TokenType.CLASS,
             [Keywords.SUPER] = TokenType.SUPER,
             [Keywords.THIS] = TokenType.THIS,
             [Keywords.INHERIT] = TokenType.INHERIT,
-            ["true"] = TokenType.TRUE,
-            ["var"] = TokenType.VAR,
-            ["while"] = TokenType.WHILE
+
+            // Function-related keywords
+            [Keywords.FUNC] = TokenType.FUN,
+            [Keywords.RETURN] = TokenType.RETURN,
+
+            // Variable and value keywords
+            [Keywords.VAR] = TokenType.VAR,
+            [Keywords.TRUE] = TokenType.TRUE,
+            [Keywords.FALSE] = TokenType.FALSE,
+            [Keywords.NIL] = TokenType.NIL,
+
+            // Control flow keywords
+            [Keywords.IF] = TokenType.IF,
+            [Keywords.ELSE] = TokenType.ELSE,
+            [Keywords.FOR] = TokenType.FOR,
+            [Keywords.WHILE] = TokenType.WHILE,
+
+            // Logical operators
+            [Keywords.AND] = TokenType.AND,
+            [Keywords.OR] = TokenType.OR,
+
+            // Miscellaneous
+            [Keywords.PRINT] = TokenType.PRINT,
         };
 
         private int start = 0;

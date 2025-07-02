@@ -1,4 +1,6 @@
 ﻿
+using Nox.InterpreterImpl;
+
 namespace Nox
 {
     internal class NoxClass : INoxCallable
