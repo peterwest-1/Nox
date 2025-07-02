@@ -9,7 +9,7 @@ namespace Nox
         private Environment closure;
         private readonly bool IsInitializer;
 
-        public NoxFunction(Function declaration, Environment closure, bool IsInitializer = false)
+        public NoxFunction(Function declaration, Environment closure, bool IsInitializer)
         {
             this.declaration = declaration;
             this.closure = closure;
@@ -33,11 +33,11 @@ namespace Nox
             }
             catch (NoxReturnException returnValue)
             {
-                if (IsInitializer) return closure.GetAt(0, "this");
+                if (IsInitializer) return closure.GetAt(0, Constants.THIS);
                 return returnValue.value;
             }
 
-            if (IsInitializer) return closure.GetAt(0, "this");
+            if (IsInitializer) return closure.GetAt(0, Constants.THIS);
             return null;
         }
 
@@ -49,7 +49,7 @@ namespace Nox
         public NoxFunction Bind(NoxInstance instance)
         {
             Environment environment = new(closure);
-            environment.Define("this", instance);
+            environment.Define(Constants.THIS, instance);
             return new NoxFunction(declaration, environment, IsInitializer);
         }
     }

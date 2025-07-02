@@ -1,6 +1,4 @@
 ﻿
-using System.Xml.Linq;
-
 namespace Nox
 {
     internal class NoxClass : INoxCallable
@@ -17,7 +15,7 @@ namespace Nox
 
         public int Arity()
         {
-            NoxFunction initializer = FindMethod("init");
+            NoxFunction initializer = FindMethod(Constants.INIT);
             if (initializer == null) return 0;
             return initializer.Arity();
         }
@@ -25,8 +23,11 @@ namespace Nox
         public object Call(Interpreter interpreter, List<object> arguments)
         {
             NoxInstance instance = new(this);
-            NoxFunction initializer = FindMethod("init");
-            initializer?.Bind(instance).Call(interpreter, arguments);
+            NoxFunction initializer = FindMethod(Constants.INIT);
+            if (initializer != null)
+            {
+                initializer.Bind(instance).Call(interpreter, arguments);
+            }
             return instance;
         }
 

@@ -60,6 +60,10 @@ namespace Nox
             List<Stmt> statements = parser.Parse();
             if (hadError) return;
 
+
+            Resolver resolver = new(interpreter);
+            resolver.Resolve(statements);
+
             interpreter.Interpret(statements);
             if (hadError) return;
             if (hadRuntimeError) return; //?

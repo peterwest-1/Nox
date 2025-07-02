@@ -22,7 +22,7 @@ namespace Nox
 
         public void Define(string name, object value)
         {
-            values.Add(name, value);
+            values[name] = value;
         }
 
         public object Get(Token name)
@@ -74,7 +74,7 @@ namespace Nox
 
         public void AssignAt(int distance, Token name, Object value)
         {
-            Ancestor(distance).values.Add(name.lexeme, value);
+            Ancestor(distance).values[name.lexeme] = value;
         }
     }
 }

@@ -331,12 +331,12 @@ namespace Nox
             Dictionary<string, NoxFunction> methods = [];
             foreach (Stmt.Function method in stmt.methods)
             {
-                NoxFunction function = new(method, environment, method.name.lexeme.Equals("init"));
+                NoxFunction function = new(method, environment, method.name.lexeme.Equals(Constants.INIT));
                 methods.Add(method.name.lexeme, function);
             }
 
-            NoxClass mClass = new NoxClass(stmt.name.lexeme, methods);
-            environment.Assign(stmt.name, mClass);
+            NoxClass klass = new(stmt.name.lexeme, methods);
+            environment.Assign(stmt.name, klass);
             return null;
         }
 

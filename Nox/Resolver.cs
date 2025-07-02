@@ -9,8 +9,8 @@ namespace Nox
         {
             NONE,
             FUNCTION,
-            METHOD,
             INITIALIZER,
+            METHOD,
         }
 
         enum ClassType
@@ -201,7 +201,7 @@ namespace Nox
         private void Define(Token name)
         {
             if (scopes.Count == 0) return;
-            scopes.Peek().Add(name.lexeme, true);
+            scopes.Peek()[name.lexeme] = true;
         }
 
         private void ResolveLocal(Expr expr, Token name)
@@ -236,7 +236,6 @@ namespace Nox
         {
             ClassType enclosingClass = currentClass;
             currentClass = ClassType.CLASS;
-
             Declare(stmt.name);
             Define(stmt.name);
 
@@ -246,7 +245,7 @@ namespace Nox
             foreach (Stmt.Function method in stmt.methods)
             {
                 FunctionType declaration = FunctionType.METHOD;
-                if (method.name.lexeme.Equals("init"))
+                if (method.name.lexeme.Equals(Constants.INIT))
                 {
                     declaration = FunctionType.INITIALIZER;
                 }
